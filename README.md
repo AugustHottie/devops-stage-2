@@ -26,13 +26,18 @@ To run docker containers, you need to download and install Docker Desktop from t
 
 Replace `nginx.conf` with `dev.nginx.conf` order to run the application in development mode.
 
-To run the application in development mode, run the following command:
+To run the application in development mode, run the following command in the project root directory:
 
 ```bash
 docker-compose up --build
 ```
 
-This command will build and run the frontend, backend, and database containers. The frontend will be available at `http://localhost` and the backend will be available at `http://localhost/api`, with api docs and redocs available at `http://localhost/docs` and `http://localhost/redoc` respectively. Also, there is an adminer panel available at `http://db.localhost` to view the database, and nginx proxy is available at `http://proxy.localhost` to manage proxy configurations.
+This command will build and run the frontend, backend, and database containers. 
+The frontend will be available at: `http://localhost` 
+The backend will be available at: `http://localhost/api`, 
+with api docs and redocs available at: `http://localhost/docs`,
+and `http://localhost/redoc` respectively.
+Also, there is an adminer panel available at: `http://db.localhost` to view the database, and nginx proxy is available at: `http://proxy.localhost` to manage proxy configurations.
 
 ### Setup Production with Docker
 
