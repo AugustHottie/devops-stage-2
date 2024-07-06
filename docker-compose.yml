@@ -1,0 +1,103 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend-network
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080" # Host port 8081 to container port 8080
+    networks:
+      - backend-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:3000" # Host port 5173 to container port 80
+    networks:
+      - frontend-network
+    env_file:
+      - ./frontend/.env
+    environment:
+      - VITE_API_URL=http://namelesscoin.wtf
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    networks:
+      - backend-network
+
+  nginx-manager:
+    image: jc21/nginx-proxy-manager:latest
+    restart: always
+    ports:
+      - "8082:80" # Host port 8082 to container port 80
+      - "8443:443" # Host port 8443 to container port 443
+      - "8090:81" # Host port 8090 to container port 81
+    environment:
+      - DB_SQLITE_FILE=/data/database.sqlite
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - backend-network
+      - frontend-network
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf # Your Nginx configuration
+      - ./letsencrypt:/etc/letsencrypt # Volume to share certificates with Nginx
+      - ./webroot:/var/www/certbot # Volume for Certbot webroot
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - backend-network
+      - frontend-network
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt # Volume to store Certbot certificates
+      - ./webroot:/var/www/certbot # Volume for Certbot webroota
+    networks:
+      - backend-network
+      - frontend-network
+
+volumes:
+  postgres_data:
+  npm_data:
+  npm_letsencrypt:
+  letsencrypt: # Volume to persist SSL certificates
+  webroot: # Volume for Certbot webroot
+
+networks:
+  backend-network:
+    driver: bridge
+  frontend-network:
+    driver: bridge
