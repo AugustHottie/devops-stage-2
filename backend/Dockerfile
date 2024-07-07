@@ -1,33 +1,20 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.10
 
-# Set environment variables to avoid potential Python issues
-ENV PYTHONUNBUFFERED 1
+WORKDIR /app/
 
-# Install dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl gcc libpq-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
+    cd /usr/local/bin && \
+    ln -s /opt/poetry/bin/poetry && \
+    poetry config virtualenvs.create false
 
-# Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PATH="/root/.local/bin:$PATH"
+COPY ./pyproject.toml ./poetry.lock* /app/
 
-# Set the working directory to /app
-WORKDIR /app
+RUN poetry install --no-root --only main
 
-# Copy only the necessary files
-COPY pyproject.toml poetry.lock /app/
+ENV PYTHONPATH=/app
 
-# Install Python dependencies using Poetry
-RUN poetry install --no-dev 
+COPY ./alembic.ini /app/
 
-# Copy the rest of the application
-COPY . /app
+COPY ./prestart.sh /app/
 
-# Expose the port FastAPI is running on
-EXPOSE 8000
-
-# Run the prestart script to initialize the database
-CMD poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000
+COPY ./app /app/app
