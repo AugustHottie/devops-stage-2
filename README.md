@@ -18,48 +18,75 @@ To get started with this template, please follow the instructions in the respect
 - [Frontend README](./frontend/README.md)
 - [Backend README](./backend/README.md)
 
-## Docker
+## Docker Setup Guide
 
-To run docker containers, you need to download and install Docker Desktop from the [official Docker website](https://www.docker.com/products/docker-desktop).
+This guide will help you run your application using Docker, whether for development or production environments.
 
-### Setup Development with Docker
+### Prerequisites
 
-Replace `nginx.conf` with `dev.nginx.conf` order to run the application in development mode.
+Ensure you have Docker Desktop installed. You can download it from the [official Docker website](https://www.docker.com/products/docker-desktop).
 
-To run the application in development mode, run the following command in the project root directory:
+### Development Setup
 
-```bash
-docker-compose up --build
-```
+To set up the development environment, follow these steps:
 
-This command will build and run the frontend, backend, and database containers. 
-The frontend will be available at: `http://localhost` 
-The backend will be available at: `http://localhost/api`, 
-with api docs and redocs available at: `http://localhost/docs`,
-and `http://localhost/redoc` respectively.
-Also, there is an adminer panel available at: `http://db.localhost` to view the database, and nginx proxy is available at: `http://proxy.localhost` to manage proxy configurations.
+1. **Replace Nginx Configuration**:
+   - Replace `nginx.conf` with `dev.nginx.conf`.
 
-### Setup Production with Docker
+2. **Build and Run Containers**:
+   - Navigate to the project root directory and run:
+     ```bash
+     docker-compose up --build
+     ```
 
-Replace `nginx.conf` with `prod.nginx.conf` order to run the application in production mode.
+3. **Access the Application**:
+   - **Frontend**: [http://localhost](http://localhost)
+   - **Backend**: [http://localhost/api](http://localhost/api)
+   - **API Docs**: [http://localhost/docs](http://localhost/docs)
+   - **ReDoc**: [http://localhost/redoc](http://localhost/redoc)
+   - **Adminer Panel**: [http://db.localhost](http://db.localhost)
+   - **Nginx Proxy Manager**: [http://proxy.localhost](http://proxy.localhost)
 
-To run the application in production mode, run the following command:
+### Production Setup
 
-```bash
-docker-compose -f docker-compose.yml up --build
-```
+To set up the production environment, follow these steps:
 
-This command will build and run the frontend, backend, and database containers. The frontend will be available at `https://namelesscoin.wtf` and the backend will be available at `https://namelesscoin.wtf/api`, with api docs and redocs available at `https://namelesscoin.wtf/docs` and `https://namelesscoin.wtf/redoc` respectively.
+1. **Replace Nginx Configuration**:
+   - Replace `nginx.conf` with `prod.nginx.conf`.
 
-Also, there is an adminer panel available at `http://db.namelesscoin.wtf` to view the database, and nginx proxy is available at `http://proxy.namelesscoin.wtf` to manage proxy configurations.
+2. **Build and Run Containers**:
+   - Run the following command:
+     ```bash
+     docker-compose -f docker-compose.yml up --build
+     ```
 
-### Setup with another domain
+3. **Access the Application**:
+   - **Frontend**: [https://namelesscoin.wtf](https://namelesscoin.wtf)
+   - **Backend**: [https://namelesscoin.wtf/api](https://namelesscoin.wtf/api)
+   - **API Docs**: [https://namelesscoin.wtf/docs](https://namelesscoin.wtf/docs)
+   - **ReDoc**: [https://namelesscoin.wtf/redoc](https://namelesscoin.wtf/redoc)
+   - **Adminer Panel**: [http://db.namelesscoin.wtf](http://db.namelesscoin.wtf)
+   - **Nginx Proxy Manager**: [http://proxy.namelesscoin.wtf](http://proxy.namelesscoin.wtf)
 
-To use new domain, we need to create a new SSL certificate, you can use the following command, via removing 443 ports on `production.nginx.conf`, via replacing `{domain.name}` with your domain name.
+### Using a Custom Domain
 
-```bash
-docker compose up -d
-docker-compose run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d {domain.name}
-```
+To set up the application with a custom domain:
 
-and change the domain name in `production.nginx.conf` and `docker-compose.yml` files.
+1. **Create a New SSL Certificate**:
+   - Remove the 443 ports from `production.nginx.conf`.
+   - Replace `{domain.name}` with your domain name in the following command:
+     ```bash
+     docker compose up -d
+     docker-compose run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d {domain.name}
+     ```
+
+2. **Update Configuration Files**:
+   - Change the domain name in both `production.nginx.conf` and `docker-compose.yml` files.
+
+### Additional Notes
+
+- Ensure you have the correct permissions to run Docker commands.
+- Verify that all services are running correctly after executing the `docker-compose up` command.
+- For more detailed information on each service, refer to the corresponding documentation in your project.
+
+By following these steps, you can easily set up and run your application in both development and production environments using Docker.
